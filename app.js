@@ -5,7 +5,6 @@ const moment = require('moment');
 const Canvas = require('canvas')
 const fetch2 = require('node-superfetch');
 const fetch = require('node-fetch');
-const request = require('request');
 const math = require('mathjs');
 var color = "#e74c3c";
 var color2 = "#c0392b";
@@ -198,47 +197,6 @@ assualt.on("message", async message => {
           return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
      }
 
-     if (cmd === `${prefix}cat`) {
-          request('http://aws.random.cat/meow', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.file
-                    }]
-               });
-          });
-     }
-
-     if (cmd === `${prefix}catfact`) {
-          request('https://catfact.ninja/fact', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send(body.fact);
-          });
-     }
-
-     if (cmd === `${prefix}bird`) {
-          request('https://some-random-api.ml/birbimg', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.link
-                    }]
-               });
-          });
-     }
-
      if (cmd === `${prefix}ping`) {
           const msg = await message.channel.send("Generating embed...");
 
@@ -304,21 +262,6 @@ assualt.on("message", async message => {
                     day = "Saturday";
                     message.channel.send(day);
           }
-     }
-
-     if (cmd === `${prefix}dog`) {
-          request('https://random.dog/woof.json', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.url
-                    }]
-               })
-          });
      }
 
      if (cmd === `${prefix}8ball`) {
