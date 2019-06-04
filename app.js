@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const assualt = new Discord.Client();
 const chalk = require('chalk');
 const moment = require('moment');
+const fetch = require('node-fetch');
 const math = require('mathjs');
 var color = "#e74c3c";
 var color2 = "#c0392b";
