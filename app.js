@@ -34,7 +34,7 @@ assualt.on("ready", () => {
      log(`Assualt Discord Bot has started with ${assualt.users.size} users and ${assualt.guilds.size} guilds!!`)
 });
 
-assualt.on("message", await message => {
+assualt.on("message", async message => {
      if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
      let messageArray = message.content.split(" ");
