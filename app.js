@@ -2,18 +2,20 @@ const Discord = require('discord.js');
 const assualt = new Discord.Client();
 const chalk = require('chalk');
 const moment = require('moment');
+const Canvas = require('canvas')
+const fetch2 = require('node-superfetch');
 const fetch = require('node-fetch');
+const request = require('request');
 const math = require('mathjs');
 var color = "#e74c3c";
 var color2 = "#c0392b";
 var owner = "288117975582507010";
 var prefix = "a!";
+var regToken = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
 
 const log = message => {
      console.log(`[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${message}`);
 };
-
-var regToken = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
 
 assualt.on('debug', e => {
      log(chalk.bgBlue.green(e.replace(regToken, 'that was redacted')));
@@ -36,26 +38,39 @@ assualt.on("ready", () => {
 });
 
 assualt.on("message", async message => {
-     if (message.author.bot) return;
+     // if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
      let messageArray = message.content.split(" ");
      let cmd = messageArray[0];
      let args = messageArray.slice(1);
      let client = message.client;
 
-     if (cmd === `${prefix}choose`) {
-          return message.channel.send(args.length === 1 ?
-               'You only gave me one choice!' :
-               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
-     }
-     
-     if (cmd === `${prefix}dog`) {
-          const url = await fetch('https://dog.ceo/api/breeds/image/random')
-               .then(response => response.json())
-               .then(body => body.message);
-          return message.channel.send("", url);
-     }
-
+     const answers = [
+          'Maybe.',
+          'Certainly not.',
+          'I hope so.',
+          'Not in your wildest dreams.',
+          'There is a good chance.',
+          'Quite likely.',
+          'I think so.',
+          'I hope not.',
+          'I hope so.',
+          'Never!',
+          'Fuhgeddaboudit.',
+          'Ahaha! Really?!?',
+          'Pfft.',
+          'Sorry, bucko.',
+          'Hell, yes.',
+          'Hell to the no.',
+          'The future is bleak.',
+          'The future is uncertain.',
+          'I would rather not say.',
+          'Who cares?',
+          'Possibly.',
+          'Never, ever, ever.',
+          'There is a small chance.',
+          'Yes!'
+     ];
      const compliments = [
           'Your smile is contagious.',
           'You look great today.',
@@ -159,45 +174,152 @@ assualt.on("message", async message => {
           "You're a gift to those around you.",
           'You deserve better.'
      ];
-     
+
+     if (cmd === `${prefix}choose`) {
+          if (args.length === 0) return message.channel.send("You need to give me two choices!");
+          return message.channel.send(args.length === 1 ?
+               'You only gave me one choice!' :
+               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
+     }
+
+     if (cmd === `${prefix}say`) {
+          const sayMessage = args.join(" ");
+          message.channel.send(sayMessage);
+     }
+
+     if (cmd === `${prefix}fsay`) {
+          const sayMessage = args.join(" ");
+          message.delete()
+          message.channel.send(sayMessage);
+     }
+
      if (cmd === `${prefix}compliment`) {
           let user = message.mentions.users.first() || message.author;
-          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * answers.length)])
+          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
      }
 
      if (cmd === `${prefix}cat`) {
-          const file = await fetch('http://aws.random.cat/meow')
-               .then(response => response.json())
-               .then(body => body.file);
-          return message.channel.send("", file)
+          request('http://aws.random.cat/meow', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.file
+                    }]
+               });
+          });
      }
 
-     const answers = [
-          'Maybe.',
-          'Certainly not.',
-          'I hope so.',
-          'Not in your wildest dreams.',
-          'There is a good chance.',
-          'Quite likely.',
-          'I think so.',
-          'I hope not.',
-          'I hope so.',
-          'Never!',
-          'Fuhgeddaboudit.',
-          'Ahaha! Really?!?',
-          'Pfft.',
-          'Sorry, bucko.',
-          'Hell, yes.',
-          'Hell to the no.',
-          'The future is bleak.',
-          'The future is uncertain.',
-          'I would rather not say.',
-          'Who cares?',
-          'Possibly.',
-          'Never, ever, ever.',
-          'There is a small chance.',
-          'Yes!'
-     ]
+     if (cmd === `${prefix}catfact`) {
+          request('https://catfact.ninja/fact', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send(body.fact);
+          });
+     }
+
+     if (cmd === `${prefix}bird`) {
+          request('https://some-random-api.ml/birbimg', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.link
+                    }]
+               });
+          });
+     }
+
+     if (cmd === `${prefix}ping`) {
+          const msg = await message.channel.send("Generating embed...");
+
+          let pingembed = new Discord.RichEmbed()
+               .addField(":computer: Latency: ", `${msg.createdTimestamp - message.createdTimestamp}ms`)
+               .addField(`:stopwatch: API Latency:`, `${Math.round(client.ping)}ms`)
+               .setColor(color)
+               .setThumbnail(message.author.avatarURL)
+
+          msg.edit(pingembed)
+     }
+
+     if (cmd === `${prefix}timer`) {
+          let messageArray = message.content.split(" ");
+          let args = messageArray.slice(1);
+          let username = args[0];
+          if (!username) return;
+
+          var ms = username;
+          ms = 1000 * Math.round(ms / 1000); // round to nearest second
+          var d = new Date(ms);
+
+          message.delete();
+
+          message.channel.send(`You've successfully set your timer for **${d.getUTCMinutes() + "m" + d.getUTCSeconds() + "s"}**! (Converted from milliseconds)`).then(message => {
+               setTimeout(() => {
+                    message.delete();
+               }, 5000);
+          })
+
+          setTimeout(() => {
+               message.author.send(`**__Time is up!__**\nYour timer has set off\nMessage: ${args.slice(1).join(" ")}`);
+          }, username);
+     };
+
+     if (cmd === `${prefix}day`) {
+          switch (new Date().getDay()) {
+               case 0:
+                    day = "Sunday";
+                    message.channel.send(day);
+                    break;
+               case 1:
+                    day = "Monday";
+                    message.channel.send(day);
+                    break;
+               case 2:
+                    day = "Tuesday";
+                    message.channel.send(day);
+                    break;
+               case 3:
+                    day = "Wednesday";
+                    message.channel.send(day);
+                    break;
+               case 4:
+                    day = "Thursday";
+                    message.channel.send(day);
+                    break;
+               case 5:
+                    day = "Friday";
+                    message.channel.send(day);
+                    break;
+               case 6:
+                    day = "Saturday";
+                    message.channel.send(day);
+          }
+     }
+
+     if (cmd === `${prefix}dog`) {
+          request('https://random.dog/woof.json', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.url
+                    }]
+               })
+          });
+     }
 
      if (cmd === `${prefix}8ball`) {
           return message.channel.send(message.content.endsWith('?') ?
@@ -254,6 +376,47 @@ assualt.on("message", async message => {
                repo = err
           }
           message.channel.send("**Input**\n```js\n" + args + "```\n**Output**\n```js\n" + repo + "```");
+     }
+
+     if (cmd === `${prefix}profile`) {
+          let user = message.mentions.users.first() || message.author;
+          const canvas = new Canvas.createCanvas(800, 250);
+          const ctx = canvas.getContext("2d");
+
+          const {
+               body: t
+          } = await fetch2.get("https://media.discordapp.net/attachments/584195827908608002/585495070950555670/fgfdg_1.png");
+          const aa = await Canvas.loadImage(t);
+          ctx.drawImage(aa, 0, 0);
+
+          const {
+               body: avi
+          } = await fetch2.get(user.avatarURL);
+          const avatar = await Canvas.loadImage(avi);
+          ctx.drawImage(avatar, 15, 18, 220, 220);
+
+          ctx.font = '57px Arial';
+          ctx.fillStyle = "rgb(169,0,11)";
+          ctx.textAlign = 'center';
+          ctx.fillText('#' + user.discriminator, 519, 170);
+
+          ctx.font = '57px Arial';
+          ctx.fillStyle = "rgb(255,255,255)";
+          ctx.textAlign = 'center';
+          ctx.fillText('#' + user.discriminator, 519, 165);
+
+          ctx.font = '57px Cocogoose';
+          ctx.fillStyle = "rgb(169,0,11)";
+          ctx.textAlign = 'center';
+          ctx.fillText(user.username, 519, 125);
+
+          ctx.font = '57px Cocogoose';
+          ctx.fillStyle = "rgb(255,255,255)";
+          ctx.textAlign = 'center';
+          ctx.fillText(user.username, 519, 120);
+
+          const a = new Discord.Attachment(canvas.toBuffer(), 'avatar.png');
+          message.channel.send(a);
      }
 });
 
