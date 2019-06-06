@@ -214,6 +214,7 @@ assualt.on("message", async message => {
           let args = messageArray.slice(1);
           let username = args[0];
           if (!username) return;
+          if (username > 18000000) return message.channel.send("You may not do more than 5 hours.")
 
           var ms = username;
           ms = 1000 * Math.round(ms / 1000); // round to nearest second
