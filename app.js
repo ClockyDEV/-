@@ -173,6 +173,77 @@ assualt.on("message", async message => {
           "You're a gift to those around you.",
           'You deserve better.'
      ];
+     
+     if (cmd === `${prefix}weather`) {
+
+          if (!args[0]) {
+               return message.channel.send("Please provide a city/country.")
+          }
+
+          weather.find({
+               search: args.join(" "),
+               degreeType: 'F'
+          }, function (err, result) {
+               if (err) return message.channel.send(err);
+
+               switch (new Date().getDay()) {
+                    case 0:
+                         day = "Sunday";
+                         break;
+                    case 1:
+                         day = "Monday";
+                         break;
+                    case 2:
+                         day = "Tuesday";
+                         break;
+                    case 3:
+                         day = "Wednesday";
+                         break;
+                    case 4:
+                         day = "Thursday";
+                         break;
+                    case 5:
+                         day = "Friday";
+                         break;
+                    case 6:
+                         day = "Saturday";
+               }
+
+               try {
+                    const embed = new Discord.RichEmbed()
+                         .setColor(color)
+                         .setAuthor(`Weather For ${result[0].current.observationpoint}`)
+                         .addField(day, result[0].current.skytext, true)
+                         .addField("Timezone", `UTC${result[0].location.timezone}`, true)
+                         .addField("Feels Like", result[0].current.feelslike, true)
+                         .addField("Degree Type", result[0].location.degreetype, true)
+                         .addField("Temperature", result[0].current.temperature + " Degrees", true)
+                         .addField("Feels Like", result[0].current.feelslike + " Degrees", true)
+                         .addField("Winds", result[0].current.winddisplay, true)
+                         .addField("Humidity", result[0].current.humidity + '%', true)
+                         .setThumbnail(result[0].current.imageUrl);
+
+                    message.channel.send(embed);
+               } catch (err) {
+                    return;
+               }
+          });
+     }
+
+     if (cmd === `${prefix}dog`) {
+          request('https://random.dog/woof.json', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.url
+                    }]
+               })
+          });
+     }
 
      if (cmd === `${prefix}choose`) {
           if (args.length === 0) return message.channel.send("You need to give me two choices!");
