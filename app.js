@@ -3,6 +3,7 @@ const assualt = new Discord.Client();
 const chalk = require('chalk');
 const moment = require('moment');
 const Canvas = require('canvas')
+const weather = require('weather-js');
 const fetch2 = require('node-superfetch');
 const fetch = require('node-fetch');
 const math = require('mathjs');
