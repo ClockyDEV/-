@@ -3,9 +3,10 @@ const assualt = new Discord.Client();
 const chalk = require('chalk');
 const moment = require('moment');
 const Canvas = require('canvas')
-const weather = require('weather-js');
 const fetch2 = require('node-superfetch');
 const fetch = require('node-fetch');
+const request = require('request');
+const weather = require('weather-js');
 const math = require('mathjs');
 var color = "#e74c3c";
 var color2 = "#c0392b";
@@ -174,7 +175,137 @@ assualt.on("message", async message => {
           "You're a gift to those around you.",
           'You deserve better.'
      ];
-     
+
+     if (cmd === `${prefix}choose`) {
+          if (args.length === 0) return message.channel.send("You need to give me two choices!");
+          return message.channel.send(args.length === 1 ?
+               'You only gave me one choice!' :
+               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
+     }
+
+     if (cmd === `${prefix}say`) {
+          const sayMessage = args.join(" ");
+          message.channel.send(sayMessage);
+     }
+
+     if (cmd === `${prefix}fsay`) {
+          const sayMessage = args.join(" ");
+          message.delete()
+          message.channel.send(sayMessage);
+     }
+
+     if (cmd === `${prefix}compliment`) {
+          let user = message.mentions.users.first() || message.author;
+          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
+     }
+
+     if (cmd === `${prefix}cat`) {
+          request('http://aws.random.cat/meow', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.file
+                    }]
+               });
+          });
+     }
+
+     if (cmd === `${prefix}catfact`) {
+          request('https://catfact.ninja/fact', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send(body.fact);
+          });
+     }
+
+     if (cmd === `${prefix}bird`) {
+          request('https://some-random-api.ml/birbimg', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.link
+                    }]
+               });
+          });
+     }
+
+     if (cmd === `${prefix}ping`) {
+          const msg = await message.channel.send("Generating embed...");
+
+          let pingembed = new Discord.RichEmbed()
+               .addField(":computer: Latency: ", `${msg.createdTimestamp - message.createdTimestamp}ms`)
+               .addField(`:stopwatch: API Latency:`, `${Math.round(client.ping)}ms`)
+               .setColor(color)
+               .setThumbnail(message.author.avatarURL)
+
+          msg.edit(pingembed)
+     }
+
+     if (cmd === `${prefix}timer`) {
+          let messageArray = message.content.split(" ");
+          let args = messageArray.slice(1);
+          let username = args[0];
+          if (!username) return;
+          if (username > 18000000) return message.channel.send("You may not do more than 5 hours.")
+
+          var ms = username;
+          ms = 1000 * Math.round(ms / 1000); // round to nearest second
+          var d = new Date(ms);
+
+          message.delete();
+
+          message.channel.send(`You've successfully set your timer for **${d.getUTCMinutes() + "m" + d.getUTCSeconds() + "s"}**! (Converted from milliseconds)`).then(message => {
+               setTimeout(() => {
+                    message.delete();
+               }, 5000);
+          })
+
+          setTimeout(() => {
+               message.author.send(`**__Time is up!__**\nYour timer has set off\nMessage: ${args.slice(1).join(" ")}`);
+          }, username);
+     };
+
+     if (cmd === `${prefix}day`) {
+          switch (new Date().getDay()) {
+               case 0:
+                    day = "Sunday";
+                    break;
+               case 1:
+                    day = "Monday";
+                    break;
+               case 2:
+                    day = "Tuesday";
+                    break;
+               case 3:
+                    day = "Wednesday";
+                    break;
+               case 4:
+                    day = "Thursday";
+                    break;
+               case 5:
+                    day = "Friday";
+                    break;
+               case 6:
+                    day = "Saturday";
+          }
+
+          const embed = new Discord.RichEmbed()
+               .setColor(color)
+               .setDescription(day)
+          message.channel.send(embed)
+     }
+
      if (cmd === `${prefix}weather`) {
 
           if (!args[0]) {
@@ -244,97 +375,6 @@ assualt.on("message", async message => {
                     }]
                })
           });
-     }
-
-     if (cmd === `${prefix}choose`) {
-          if (args.length === 0) return message.channel.send("You need to give me two choices!");
-          return message.channel.send(args.length === 1 ?
-               'You only gave me one choice!' :
-               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
-     }
-
-     if (cmd === `${prefix}say`) {
-          const sayMessage = args.join(" ");
-          message.channel.send(sayMessage);
-     }
-
-     if (cmd === `${prefix}fsay`) {
-          const sayMessage = args.join(" ");
-          message.delete()
-          message.channel.send(sayMessage);
-     }
-
-     if (cmd === `${prefix}compliment`) {
-          let user = message.mentions.users.first() || message.author;
-          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
-     }
-
-     if (cmd === `${prefix}ping`) {
-          const msg = await message.channel.send("Generating embed...");
-
-          let pingembed = new Discord.RichEmbed()
-               .addField(":computer: Latency: ", `${msg.createdTimestamp - message.createdTimestamp}ms`)
-               .addField(`:stopwatch: API Latency:`, `${Math.round(client.ping)}ms`)
-               .setColor(color)
-               .setThumbnail(message.author.avatarURL)
-
-          msg.edit(pingembed)
-     }
-
-     if (cmd === `${prefix}timer`) {
-          let messageArray = message.content.split(" ");
-          let args = messageArray.slice(1);
-          let username = args[0];
-          if (!username) return;
-          if (username > 18000000) return message.channel.send("You may not do more than 5 hours.")
-
-          var ms = username;
-          ms = 1000 * Math.round(ms / 1000); // round to nearest second
-          var d = new Date(ms);
-
-          message.delete();
-
-          message.channel.send(`You've successfully set your timer for **${d.getUTCMinutes() + "m" + d.getUTCSeconds() + "s"}**! (Converted from milliseconds)`).then(message => {
-               setTimeout(() => {
-                    message.delete();
-               }, 5000);
-          })
-
-          setTimeout(() => {
-               message.author.send(`**__Time is up!__**\nYour timer has set off\nMessage: ${args.slice(1).join(" ")}`);
-          }, username);
-     };
-
-     if (cmd === `${prefix}day`) {
-          switch (new Date().getDay()) {
-               case 0:
-                    day = "Sunday";
-                    message.channel.send(day);
-                    break;
-               case 1:
-                    day = "Monday";
-                    message.channel.send(day);
-                    break;
-               case 2:
-                    day = "Tuesday";
-                    message.channel.send(day);
-                    break;
-               case 3:
-                    day = "Wednesday";
-                    message.channel.send(day);
-                    break;
-               case 4:
-                    day = "Thursday";
-                    message.channel.send(day);
-                    break;
-               case 5:
-                    day = "Friday";
-                    message.channel.send(day);
-                    break;
-               case 6:
-                    day = "Saturday";
-                    message.channel.send(day);
-          }
      }
 
      if (cmd === `${prefix}8ball`) {
@@ -464,4 +504,4 @@ assualt.on("guildCreate", async guild => {
      assualt.users.get(owner).send(guildOwner)
 });
 
-assualt.login(process.env.TOKEN);
+assualt.login("NTg0MTg4MDI1NTM0MjgzNzg2.XPXYDw.ojD5J3hazgVMrzPPtFPywpUIrkw");
