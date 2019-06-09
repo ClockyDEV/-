@@ -504,4 +504,4 @@ assualt.on("guildCreate", async guild => {
      assualt.users.get(owner).send(guildOwner)
 });
 
-assualt.login("NTg0MTg4MDI1NTM0MjgzNzg2.XPXYDw.ojD5J3hazgVMrzPPtFPywpUIrkw");
+assualt.login(process.env.TOKEN);
