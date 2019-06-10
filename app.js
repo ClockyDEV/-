@@ -45,7 +45,6 @@ assualt.on("message", async message => {
      let cmd = messageArray[0];
      let args = messageArray.slice(1);
      let client = message.client;
-
      const answers = [
           'Maybe.',
           'Certainly not.',
@@ -176,80 +175,27 @@ assualt.on("message", async message => {
           'You deserve better.'
      ];
 
-     if (cmd === `${prefix}choose`) {
-          if (args.length === 0) return message.channel.send("You need to give me two choices!");
-          return message.channel.send(args.length === 1 ?
-               'You only gave me one choice!' :
-               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
-     }
+     //commands
 
-     if (cmd === `${prefix}say`) {
-          const sayMessage = args.join(" ");
-          message.channel.send(sayMessage);
-     }
-
-     if (cmd === `${prefix}fsay`) {
-          const sayMessage = args.join(" ");
-          message.delete()
-          message.channel.send(sayMessage);
-     }
-
-     if (cmd === `${prefix}compliment`) {
-          let user = message.mentions.users.first() || message.author;
-          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
-     }
-
-     if (cmd === `${prefix}cat`) {
-          request('http://aws.random.cat/meow', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.file
-                    }]
-               });
+     if (cmd === `${prefix}help`) {
+          message.channel.send(`**Check your DM's :mailbox_with_mail:**`).then(message => {
+               setTimeout(() => {
+                    message.delete();
+               }, 5000);
           });
-     }
 
-     if (cmd === `${prefix}catfact`) {
-          request('https://catfact.ninja/fact', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send(body.fact);
-          });
-     }
-
-     if (cmd === `${prefix}bird`) {
-          request('https://some-random-api.ml/birbimg', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.link
-                    }]
-               });
-          });
-     }
-
-     if (cmd === `${prefix}ping`) {
-          const msg = await message.channel.send("Generating embed...");
-
-          let pingembed = new Discord.RichEmbed()
-               .addField(":computer: Latency: ", `${msg.createdTimestamp - message.createdTimestamp}ms`)
-               .addField(`:stopwatch: API Latency:`, `${Math.round(client.ping)}ms`)
+          const embed = new Discord.RichEmbed()
+               .setAuthor("Help Command", client.user.displayAvatarURL)
                .setColor(color)
-               .setThumbnail(message.author.avatarURL)
+               .setDescription("**Help Command : Prefix `a!`**\nIf you need further help, message a developer using the `dev` command.\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Syntax Key **`<>` • Required Argument\n`[]` • Sidenote From Dev\n`{}` • Optional Argument\n`...` • Multiple Arguments\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n **Commands • Fun **\n`slot` • Usage: `a!slot`\n`8ball` • Usage: `a!8ball <Question[?]>`\n`compliment` • Usage: `a!compliment {user}`\n`profile` • Usage: `a!profile {user}`\n`choose` • Usage: `a!choose <choice> <choice>...`\n`catfact` • Usage: `a!catfact`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ **\nCommands• Image **\n`dog` • Usage: `a!dog`\n`cat` • Usage: `a!cat`\n`bird` • Usage: `a!bird`\n`avatar` • Usage: `a!avatar {user}`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Commands• Tools **\n`timer` • Usage: `a!timer <milliseconds> {message}`\n`math` • Usage: `a!math <expression>`\n`day` • Usage: `a!day`\n`weather` • Usage: `a!weather <location>`\n`ping` • Usage: `a!ping`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\nBe sure to follow team Assault on Instagram! • https: //instagram.com/team.assault")
 
-          msg.edit(pingembed)
+          message.author.send(embed).catch((e) => {
+               message.channel.send("Please enable your DM's!").then(message => {
+                    setTimeout(() => {
+                         message.delete();
+                    }, 5000)
+               })
+          });
      }
 
      if (cmd === `${prefix}timer`) {
@@ -274,42 +220,16 @@ assualt.on("message", async message => {
           setTimeout(() => {
                message.author.send(`**__Time is up!__**\nYour timer has set off\nMessage: ${args.slice(1).join(" ")}`);
           }, username);
-     };
-
-     if (cmd === `${prefix}day`) {
-          switch (new Date().getDay()) {
-               case 0:
-                    day = "Sunday";
-                    break;
-               case 1:
-                    day = "Monday";
-                    break;
-               case 2:
-                    day = "Tuesday";
-                    break;
-               case 3:
-                    day = "Wednesday";
-                    break;
-               case 4:
-                    day = "Thursday";
-                    break;
-               case 5:
-                    day = "Friday";
-                    break;
-               case 6:
-                    day = "Saturday";
-          }
-
-          const embed = new Discord.RichEmbed()
-               .setColor(color)
-               .setDescription(day)
-          message.channel.send(embed)
      }
 
      if (cmd === `${prefix}weather`) {
 
           if (!args[0]) {
-               return message.channel.send("Please provide a city/country.")
+               return message.channel.send("Please provide a city/country.").then(message => {
+                    setTimeout(() => {
+                         message.delete();
+                    }, 5000);
+               });
           }
 
           weather.find({
@@ -362,35 +282,8 @@ assualt.on("message", async message => {
           });
      }
 
-     if (cmd === `${prefix}dog`) {
-          request('https://random.dog/woof.json', {
-               json: true
-          }, (err, res, body) => {
-               if (err) {
-                    return console.log(err);
-               }
-               message.channel.send("", {
-                    files: [{
-                         attachment: body.url
-                    }]
-               })
-          });
-     }
+     if (cmd === `${prefix}serverinfo`) {
 
-     if (cmd === `${prefix}8ball`) {
-          return message.channel.send(message.content.endsWith('?') ?
-               `🎱 ${answers[Math.floor(Math.random() * answers.length)]}` :
-               "🎱 That doesn't look like a question, try again please.");
-     }
-
-     if (cmd === `${prefix}avatar`) {
-          let user = message.mentions.users.first() || message.author;
-          let image = user.displayAvatarURL;
-          let embed = new Discord.RichEmbed()
-               .setAuthor(`${user.username}#${user.discriminator}`)
-               .setColor(color)
-               .setImage(image)
-          message.channel.send(embed);
      }
 
      if (cmd === `${prefix}slot`) {
@@ -473,6 +366,143 @@ assualt.on("message", async message => {
 
           const a = new Discord.Attachment(canvas.toBuffer(), 'avatar.png');
           message.channel.send(a);
+     }
+
+     if (cmd === `${prefix}choose`) {
+          if (args.length === 0) return message.channel.send("You need to give me two choices.");
+          return message.channel.send(args.length === 1 ?
+               'You only gave me one choice.' :
+               `I think you should go with "${args[Math.floor(Math.random() * args.length)]}"`);
+     }
+
+     if (cmd === `${prefix}compliment`) {
+          let user = message.mentions.users.first() || message.author;
+          return message.channel.send(`${user.username}: ` + compliments[Math.floor(Math.random() * compliments.length)])
+     }
+
+     if (cmd === `${prefix}ping`) {
+          const msg = await message.channel.send("Generating embed...");
+
+          let pingembed = new Discord.RichEmbed()
+               .addField(":computer: Latency: ", `${msg.createdTimestamp - message.createdTimestamp}ms`)
+               .addField(`:stopwatch: API Latency:`, `${Math.round(client.ping)}ms`)
+               .setColor(color)
+               .setThumbnail(message.author.avatarURL)
+
+          msg.edit(pingembed)
+     }
+
+     if (cmd === `${prefix}day`) {
+          switch (new Date().getDay()) {
+               case 0:
+                    day = "Sunday";
+                    break;
+               case 1:
+                    day = "Monday";
+                    break;
+               case 2:
+                    day = "Tuesday";
+                    break;
+               case 3:
+                    day = "Wednesday";
+                    break;
+               case 4:
+                    day = "Thursday";
+                    break;
+               case 5:
+                    day = "Friday";
+                    break;
+               case 6:
+                    day = "Saturday";
+          }
+
+          const embed = new Discord.RichEmbed()
+               .setColor(color)
+               .setDescription(day)
+          message.channel.send(embed)
+     }
+
+     if (cmd === `${prefix}say`) {
+          const sayMessage = args.join(" ");
+          message.channel.send(sayMessage);
+     }
+
+     if (cmd === `${prefix}fsay`) {
+          const sayMessage = args.join(" ");
+          message.delete()
+          message.channel.send(sayMessage);
+     }
+
+     if (cmd === `${prefix}cat`) {
+          request('http://aws.random.cat/meow', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.file
+                    }]
+               });
+          });
+     }
+
+     if (cmd === `${prefix}dog`) {
+          request('https://random.dog/woof.json', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.url
+                    }]
+               })
+          });
+     }
+
+     if (cmd === `${prefix}catfact`) {
+          request('https://catfact.ninja/fact', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send(body.fact);
+          });
+     }
+
+     if (cmd === `${prefix}bird`) {
+          request('https://some-random-api.ml/birbimg', {
+               json: true
+          }, (err, res, body) => {
+               if (err) {
+                    return console.log(err);
+               }
+               message.channel.send("", {
+                    files: [{
+                         attachment: body.link
+                    }]
+               });
+          });
+     }
+
+     if (cmd === `${prefix}avatar`) {
+          let user = message.mentions.users.first() || message.author;
+          let image = user.displayAvatarURL;
+          let embed = new Discord.RichEmbed()
+               .setAuthor(`${user.username}#${user.discriminator}`)
+               .setColor(color)
+               .setImage(image)
+          message.channel.send(embed);
+     }
+
+     if (cmd === `${prefix}8ball`) {
+          return message.channel.send(message.content.endsWith('?') ?
+               `🎱 ${answers[Math.floor(Math.random() * answers.length)]}` :
+               "🎱 That doesn't look like a question, try again please.");
      }
 });
 
