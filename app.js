@@ -178,12 +178,8 @@ assualt.on("message", async message => {
      //commands
 
      if (cmd === `${prefix}help`) {
-          message.channel.send(`**Check your DM's :mailbox_with_mail:**`).then(message => {
-               setTimeout(() => {
-                    message.delete();
-               }, 5000);
-          });
-
+          message.channel.send(`**Check your DM's :mailbox_with_mail:**`);
+          
           const embed = new Discord.RichEmbed()
                .setAuthor("Help Command", client.user.displayAvatarURL)
                .setColor(color)
