@@ -39,7 +39,8 @@ assualt.on("ready", () => {
 });
 
 assualt.on("message", async message => {
-     // if (message.author.bot) return;
+     if (message.channel.type === "dm") return;
+     if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
      let messageArray = message.content.split(" ");
      let cmd = messageArray[0];
@@ -179,11 +180,11 @@ assualt.on("message", async message => {
 
      if (cmd === `${prefix}help`) {
           message.channel.send(`**Check your DM's :mailbox_with_mail:**`);
-          
+
           const embed = new Discord.RichEmbed()
                .setAuthor("Help Command", client.user.displayAvatarURL)
                .setColor(color)
-               .setDescription("**Help Command : Prefix `a!`**\nIf you need further help, message a developer using the `dev` command.\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Syntax Key **`<>` • Required Argument\n`[]` • Sidenote From Dev\n`{}` • Optional Argument\n`...` • Multiple Arguments\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n **Commands • Fun **\n`slot` • Usage: `a!slot`\n`8ball` • Usage: `a!8ball <Question[?]>`\n`compliment` • Usage: `a!compliment {user}`\n`profile` • Usage: `a!profile {user}`\n`choose` • Usage: `a!choose <choice> <choice>...`\n`catfact` • Usage: `a!catfact`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ **\nCommands• Image **\n`dog` • Usage: `a!dog`\n`cat` • Usage: `a!cat`\n`bird` • Usage: `a!bird`\n`avatar` • Usage: `a!avatar {user}`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Commands• Tools **\n`timer` • Usage: `a!timer <milliseconds> {message}`\n`math` • Usage: `a!math <expression>`\n`day` • Usage: `a!day`\n`weather` • Usage: `a!weather <location>`\n`ping` • Usage: `a!ping`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\nBe sure to follow team Assault on Instagram! • https: //instagram.com/team.assault")
+               .setDescription("**Help Command : Prefix `a!`**\nIf you need further help, message a developer using the `dev` command.\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Syntax Key\n**`<>` • Required Argument\n`[]` • Sidenote From Dev\n`{}` • Optional Argument\n`...` • Multiple Arguments\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n **Commands • Fun **\n`slot` • Usage: `a!slot`\n`8ball` • Usage: `a!8ball <Question[?]>`\n`compliment` • Usage: `a!compliment {user}`\n`profile` • Usage: `a!profile {user}`\n`choose` • Usage: `a!choose <choice> <choice>...`\n`catfact` • Usage: `a!catfact`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ **\nCommands• Image **\n`dog` • Usage: `a!dog`\n`cat` • Usage: `a!cat`\n`bird` • Usage: `a!bird`\n`avatar` • Usage: `a!avatar {user}`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ \n**Commands• Tools **\n`timer` • Usage: `a!timer <milliseconds> {message}`\n`math` • Usage: `a!math <expression>`\n`day` • Usage: `a!day`\n`weather` • Usage: `a!weather <location>`\n`ping` • Usage: `a!ping`\n`serverinfo` • Usage: `a!serverinfo`\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\nBe sure to follow team Assault on Instagram! • https: //instagram.com/team.assault")
 
           message.author.send(embed).catch((e) => {
                message.channel.send("Please enable your DM's!").then(message => {
@@ -279,7 +280,22 @@ assualt.on("message", async message => {
      }
 
      if (cmd === `${prefix}serverinfo`) {
-
+          var onlineCount = message.guild.members.filter(m => m.presence.status === 'online').size
+          var idleCount = message.guild.members.filter(m => m.presence.status === 'idle').size
+          var dndCount = message.guild.members.filter(m => m.presence.status === 'dnd').size
+          var offCount = message.guild.members.filter(m => m.presence.status === 'offline').size
+          var text = message.guild.channels.filter(m => m.type === "text").size
+          var voice = message.guild.channels.filter(m => m.type === "voice").size
+          const embed = new Discord.RichEmbed()
+               .setColor(color)
+               .setThumbnail(message.guild.iconURL)
+               .setTitle(`**Server Info for ${message.guild.name}**`)
+               .addField(`Members [${message.guild.memberCount}]`, `Online: ${onlineCount}\nIdle: ${idleCount}\nDnD: ${dndCount}\nOffline: ${offCount}`)
+               .addField(`Channels [${message.guild.channels.size}]`, `Text: ${text}\nVoice: ${voice}`)
+               .addField(`Owner`, `${message.guild.owner.user.tag}`)
+               .addField(`Created`, `${moment(message.guild.createdAt).format('lll')}`)
+               .setTimestamp(new moment().format('lll'))
+          message.channel.send(embed);
      }
 
      if (cmd === `${prefix}slot`) {
