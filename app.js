@@ -194,6 +194,20 @@ assualt.on("message", async message => {
                })
           });
      }
+     
+     if ((cmd === `${prefix}userinfo`) || (cmd === `${prefix}whois`)) {
+          let user = message.mentions.users.first() || message.author;
+          const embed = new Discord.RichEmbed()
+               .setColor(color)
+               .setThumbnail(user.displayAvatarURL)
+               .setTitle(`**User Info for ${user.tag}**`)
+               .addField(`User ID`, `${user.id}`, true)
+               .addField(`Status`, `${user.presence.status}`, true)
+               .addField(`Joined At`, `${moment(user.joinedAt).format('lll')}`, true)
+               .addField(`Created`, `${moment(user.createdAt).format('lll')}`, true)
+               .setTimestamp(new moment().format('lll'))
+          message.channel.send(embed);
+     }
 
      if (cmd === `${prefix}timer`) {
           let messageArray = message.content.split(" ");
