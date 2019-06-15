@@ -36,7 +36,7 @@ assualt.on("reconnecting", () => {
 
 assualt.on("ready", () => {
      log(`Assualt Discord Bot has started with ${assualt.users.size} users and ${assualt.guilds.size} guilds!!`)
-     assualt.user.setActivity("| a!help, ", "WATCHING");
+     assualt.user.setActivity("| a!help");
 });
 
 assualt.on("message", async message => {
