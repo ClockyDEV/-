@@ -1,10 +1,12 @@
 const Discord = require('discord.js');
-const assualt = new Discord.Client();
+const assault = new Discord.Client();
 const chalk = require('chalk');
 const moment = require('moment');
 const Canvas = require('canvas')
 const fetch2 = require('node-superfetch');
 const fetch = require('node-fetch');
+// const Client = require('fortnite');
+// const fortnite = new Client('Your-API-Key');
 const request = require('request');
 const weather = require('weather-js');
 const math = require('mathjs');
@@ -18,28 +20,28 @@ const log = message => {
      console.log(`[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${message}`);
 };
 
-assualt.on('debug', e => {
+assault.on('debug', e => {
      log(chalk.bgBlue.green(e.replace(regToken, 'that was redacted')));
 });
 
-assualt.on('error', e => {
+assault.on('error', e => {
      log(chalk.bgGreen(e.replace(regToken, 'that was redacted')));
 });
 
-assualt.on("disconnect", () => {
+assault.on("disconnect", () => {
      log(`You have been disconnected at ${new Date()}`);
 });
 
-assualt.on("reconnecting", () => {
+assault.on("reconnecting", () => {
      log(`Reconnecting at ${new Date()}`);
 });
 
-assualt.on("ready", () => {
-     log(`Assualt Discord Bot has started with ${assualt.users.size} users and ${assualt.guilds.size} guilds!!`)
-     assualt.user.setActivity("| a!help");
+assault.on("ready", () => {
+     log(`assault Discord Bot has started with ${assault.users.size} users and ${assault.guilds.size} guilds!!`)
+     assault.user.setActivity("| a!help");
 });
 
-assualt.on("message", async message => {
+assault.on("message", async message => {
      if (message.channel.type === "dm") return;
      if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
@@ -297,6 +299,81 @@ assualt.on("message", async message => {
           let user = message.mentions.users.first() || message.author;
           return message.channel.send(`${user.username}: ` + roasts[Math.floor(Math.random() * roasts.length)])
      }
+
+     if ((cmd === `${prefix}mute`) || (cmd === `${prefix}m`)) {
+
+          let user = message.mentions.users.first() || message.author;
+          if (!message.member.hasPermission("MANAGE_ROLES")) return message.channel.send("You don't have permission to execute this command.").then((m) => {
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          if (!message.guild.me.hasPermission(["MANAGE_ROLES", "ADMINISTRATOR"])) return message.channel.send("I don't have permission to execute this command!").then((m) => {
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          let userr = message.mentions.members.first() || message.guild.members.get(args[0]);
+          if (!userr) return message.channel.send("Please provide an valid user.").then((m) => {
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          let reason = args.slice(1).join(" ");
+          if (!reason) reason = "No reason given";
+
+          let role = message.guild.roles.find(r => r.name === "Assault Muted Role")
+          if (!role) {
+               try {
+                    role = await message.guild.createRole({
+                         color: "#576574",
+                         name: "Assault Muted Role",
+                         mentionable: false,
+                         permissions: []
+                    })
+                    message.guild.channels.forEach(async (channel, id) => {
+                         await channel.overwritePermissions(role, {
+                              SEND_MESSAGES: false,
+                              ADD_REACTIONS: false,
+                              SEND_TTS_MESSAGES: false,
+                              ATTACH_FILES: false,
+                              SPEAK: false,
+                         })
+                    })
+               } catch (e) {
+                    console.log(e.stack);
+               }
+          }
+
+          if (userr.roles.has(role.id)) {
+               return message.channel.send(`**${userr.user.tag} is already muted! :x:**`)
+          }
+
+          userr.addRole(role.id).then(() => {
+               userr.send("**You have been muted in " + message.guild.name + " for `" + reason + "`**");
+               message.channel.send(`**${userr.user.tag} has been muted. :white_check_mark:**`);
+          })
+
+          const embed = new Discord.RichEmbed()
+               .setColor(color)
+               .setAuthor("Mod Logs • Mute Command", message.guild.iconURL)
+               .addField("Moderator", message.author.username)
+               .addField("Reason", reason)
+               .addField("User", userr.user.username)
+               .addField("Date", new moment().format('lll'));
+
+          let channel = message.guild.channels.find(c => c.name === "mod-logs")
+          channel.send(embed);
+     }
+
+     // if (cmd === `${prefix}fortnite-stats`) {
+     //      const embed = new Discord.RichEmbed()
+     //           .setColor(color)
+     //           .setAuthor(`Stats for ${user} | ${insert}`)
+     // }
 
      if (cmd === `${prefix}weather`) {
 
@@ -611,7 +688,7 @@ assualt.on("message", async message => {
      }
 });
 
-assualt.on("guildCreate", async guild => {
+assault.on("guildCreate", async guild => {
      let guildCreate = new Discord.RichEmbed()
           .setColor(color)
           .setTitle("Server Logs")
@@ -624,7 +701,7 @@ assualt.on("guildCreate", async guild => {
           .addField("Created At", guild.createdAt)
           .setThumbnail(guild.iconURL)
           .setTimestamp()
-     assualt.users.get(owner).send(guildCreate)
+     assault.users.get(owner).send(guildCreate)
 
      let guildOwner = new Discord.RichEmbed()
           .setColor(color2)
@@ -636,7 +713,7 @@ assualt.on("guildCreate", async guild => {
           .addField("Joined At", guild.owner.joinedAt)
           .setThumbnail(guild.owner.user.displayAvatarURL)
           .setTimestamp()
-     assualt.users.get(owner).send(guildOwner)
+     assault.users.get(owner).send(guildOwner)
 });
 
-assualt.login(process.env.TOKEN);
+assault.login(process.env.TOKEN);
