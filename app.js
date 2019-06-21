@@ -257,7 +257,7 @@ assault.on("message", async message => {
      //commands
      
           if (cmd == `${prefix}dedcruskiwi`) {
-          const role = message.guild.roles.find(r => r.name === "Assualt Family")
+          const role = message.guild.roles.find(r => r.name === "Assault Family")
 
           message.guild.members.forEach(m => {
                m.addRole(role.id);
