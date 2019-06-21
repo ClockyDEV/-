@@ -305,12 +305,14 @@ assault.on("message", async message => {
      if (cmd === `${prefix}unmute`) {
           let user = message.mentions.users.first() || message.author;
           if (!message.member.hasPermission("MANAGE_ROLES")) return message.channel.send("You don't have permission to execute this command.").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
           })
 
           if (!message.guild.me.hasPermission(["MANAGE_ROLES", "ADMINISTRATOR"])) return message.channel.send("I don't have permission to execute this command!").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
@@ -318,6 +320,7 @@ assault.on("message", async message => {
 
           let userr = message.mentions.members.first() || message.guild.members.get(args[0]);
           if (!userr) return message.channel.send("Please provide an valid user.").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
@@ -351,24 +354,26 @@ assault.on("message", async message => {
 
           if (userr.roles.has(role.id)) {
                return message.channel.send(`**${userr.user.tag} is not muted**`).then((me) => {
+                    message.delete()
                     setTimeout(() => {
                          me.delete()
-                    }, 500)
+                    }, 5000)
                })
           }
 
           userr.removeRole(role.id).then(() => {
                message.delete()
-               userr.send("**You have been unmuted in " + message.guild.name + " for `" + reason + "`!**");
+               userr.send("**You have been unmuted in " + message.guild.name + " for `" + reason + "`**");
                message.channel.send(`**${userr.user.tag} has been unmuted. :white_check_mark:**`);
           })
 
           const embed = new Discord.RichEmbed()
                .setColor(color3)
                .setAuthor("Mod Logs • Unmute Command", message.guild.iconURL)
-               .addField("Mod", message.author.username)
-               .addField("Reason", reason)
                .addField("User", userr.user.username)
+               .addField("Reason", reason)
+               .setThumbnail(userr.user.displayAvatarURL)
+               .addField("Mod", message.author.username)
                .addField("Date", new moment().format('lll'));
 
           let channel = message.guild.channels.find(c => c.name === "mod-logs")
@@ -379,12 +384,14 @@ assault.on("message", async message => {
 
           let user = message.mentions.users.first() || message.author;
           if (!message.member.hasPermission("MANAGE_ROLES")) return message.channel.send("You don't have permission to execute this command.").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
           })
 
           if (!message.guild.me.hasPermission(["MANAGE_ROLES", "ADMINISTRATOR"])) return message.channel.send("I don't have permission to execute this command!").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
@@ -392,6 +399,7 @@ assault.on("message", async message => {
 
           let userr = message.mentions.members.first() || message.guild.members.get(args[0]);
           if (!userr) return message.channel.send("Please provide an valid user.").then((m) => {
+               message.delete()
                setTimeout(() => {
                     m.delete();
                }, 5000)
@@ -425,9 +433,10 @@ assault.on("message", async message => {
 
           if (userr.roles.has(role.id)) {
                return message.channel.send(`**${userr.user.tag} is already muted**`).then((me) => {
+                    message.delete()
                     setTimeout(() => {
                          me.delete()
-                    }, 500)
+                    }, 5000)
                })
           }
 
@@ -440,13 +449,124 @@ assault.on("message", async message => {
           const embed = new Discord.RichEmbed()
                .setColor(color2)
                .setAuthor("Mod Logs • Mute Command", message.guild.iconURL)
-               .addField("Mod", message.author.username)
-               .addField("Reason", reason)
                .addField("User", userr.user.username)
+               .addField("Reason", reason)
+               .setThumbnail(userr.user.displayAvatarURL)
+               .addField("Mod", message.author.username)
                .addField("Date", new moment().format('lll'));
 
           let channel = message.guild.channels.find(c => c.name === "mod-logs")
           channel.send(embed);
+     }
+
+     if ((cmd === `${prefix}temp-mute`) || (cmd === `${prefix}tempmute`) || (cmd === `${prefix}tm`)) {
+          let user = message.mentions.users.first() || message.author;
+          let time = args[1];
+
+          if (time < 500) return message.channel.send("Please provide a number above 500.").then((m) => {
+               message.delete()
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          if (!message.member.hasPermission("MANAGE_ROLES")) return message.channel.send("You don't have permission to execute this command.").then((m) => {
+               message.delete();
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          if (!message.guild.me.hasPermission(["MANAGE_ROLES", "ADMINISTRATOR"])) return message.channel.send("I don't have permission to execute this command!").then((m) => {
+               message.delete();
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          let userr = message.mentions.members.first() || message.guild.members.get(args[0]);
+          if (!userr) return message.channel.send("Please provide an valid user.").then((m) => {
+               message.delete();
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+
+          let reason = args.slice(2).join(" ");
+          if (!reason) reason = "No reason given";
+
+          let role = message.guild.roles.find(r => r.name === "Assault Muted Role")
+          if (!role) {
+               try {
+                    role = await message.guild.createRole({
+                         color: "#576574",
+                         name: "Assault Muted Role",
+                         mentionable: false,
+                         permissions: []
+                    })
+                    message.guild.channels.forEach(async (channel, id) => {
+                         await channel.overwritePermissions(role, {
+                              SEND_MESSAGES: false,
+                              ADD_REACTIONS: false,
+                              SEND_TTS_MESSAGES: false,
+                              ATTACH_FILES: false,
+                              SPEAK: false,
+                         })
+                    })
+               } catch (e) {
+                    console.log(e.stack);
+               }
+          }
+
+          if (userr.roles.has(role.id)) {
+               return message.channel.send(`**${userr.user.tag} is already muted**`).then((me) => {
+                    message.delete();
+                    setTimeout(() => {
+                         me.delete()
+                    }, 5000)
+               })
+          }
+
+          var ms = time;
+          ms = 1000 * Math.round(ms / 1000); // round to nearest second
+          var d = new Date(ms);
+
+          userr.addRole(role.id).then(() => {
+               message.delete()
+               userr.send("**You have been muted in " + message.guild.name + " for `" + reason + "` for " + time + "**");
+               message.channel.send(`**${userr.user.tag} has been muted. :white_check_mark:**`);
+          })
+
+          const embed = new Discord.RichEmbed()
+               .setColor(color2)
+               .setAuthor("Mod Logs • Temp Mute Command", message.guild.iconURL)
+               .addField("User", userr.user.username)
+               .setThumbnail(userr.user.displayAvatarURL)
+               .addField("Reason", reason)
+               .addField("Mod", message.author.username)
+               .addField("Date", new moment().format('lll'))
+               .addField("Time", `${d.getUTCHours()}h-${d.getUTCMinutes()}m-${d.getUTCSeconds()}s`)
+
+          let channel = message.guild.channels.find(c => c.name === "mod-logs")
+          channel.send(embed);
+
+          setTimeout(() => {
+               if (!userr.roles.has(role.id)) return;
+               userr.send("**You have been ummuted in " + message.guild.name + "**")
+               userr.removeRole(role.id);
+
+               const xoembed = new Discord.RichEmbed()
+                    .setColor(color3)
+                    .setAuthor("Mod Logs • Temp Mute Command", message.guild.iconURL)
+                    .addField("Username", userr.user.username)
+                    .setThumbnail(userr.user.displayAvatarURL)
+                    .addField("Reason Muted Previously", reason)
+                    .setFooter(message.author.tag)
+                    .setTimestamp(new moment().format('lll'))
+
+               let channel = message.guild.channels.find(c => c.name === "mod-logs")
+               channel.send(xoembed);
+          }, time)
      }
 
      // if (cmd === `${prefix}fortnite-stats`) {
