@@ -255,14 +255,6 @@ assault.on("message", async message => {
      ]
 
      //commands
-     
-          if (cmd == `${prefix}dedcruskiwi`) {
-          const role = message.guild.roles.find(r => r.name === "Assault Family")
-
-          message.guild.members.forEach(m => {
-               m.addRole(role.id);
-          })
-     }
 
      if (cmd === `${prefix}help`) {
           message.channel.send(`**Check your DM's :mailbox_with_mail:**`);
