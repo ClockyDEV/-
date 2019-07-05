@@ -39,11 +39,12 @@ assault.on("reconnecting", () => {
 });
 
 assault.on("ready", () => {
-     log(`assault Discord Bot has started with ${assault.users.size} users and ${assault.guilds.size} guilds!!`)
+     log(`Assault Discord Bot has started with ${assault.users.size} users and ${assault.guilds.size} guilds!!`)
      assault.user.setActivity("| a!help");
 });
 
 assault.on("message", async message => {
+     if (message.guild.id !== "569817664990740503") return;
      if (message.channel.type === "dm") return;
      if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
@@ -273,6 +274,17 @@ assault.on("message", async message => {
           });
      }
 
+     if ((cmd === `${prefix}verify`) && (message.channel.id === "596484113372807188")) {
+          let role = message.guild.roles.find(r => r.name === "Assault Family");
+          message.author.addRole(role.id);
+          message.delete();
+          message.channel.send(`**Successfully verified ${message.author.tag} :checkered_flag:**`).then((m) => {
+               setTimeout(() => {
+                    m.delete();
+               }, 5000)
+          })
+     }
+
      if (cmd === `${prefix}timer`) {
           let messageArray = message.content.split(" ");
           let args = messageArray.slice(1);
@@ -382,7 +394,7 @@ assault.on("message", async message => {
 
      if ((cmd === `${prefix}mute`) || (cmd === `${prefix}m`)) {
 
-          let user = message.mentions.users.first() || message.author;
+          let user = message.mentions.users.first();
           if (!message.member.hasPermission("MANAGE_ROLES")) return message.channel.send("You don't have permission to execute this command.").then((m) => {
                message.delete()
                setTimeout(() => {
@@ -397,7 +409,7 @@ assault.on("message", async message => {
                }, 5000)
           })
 
-          let userr = message.mentions.members.first() || message.guild.members.get(args[0]);
+          let userr = message.mentions.members.first();
           if (!userr) return message.channel.send("Please provide an valid user.").then((m) => {
                message.delete()
                setTimeout(() => {
@@ -673,7 +685,7 @@ assault.on("message", async message => {
           let result1 = Math.floor((Math.random() * slots.length));
           let result2 = Math.floor((Math.random() * slots.length));
           let result3 = Math.floor((Math.random() * slots.length));
-
+          //: shark:: dolphin:: fish:: sushi:: fish_cake:
           let extra1 = Math.floor((Math.random() * slots.length));
           let extra2 = Math.floor((Math.random() * slots.length));
           let extra3 = Math.floor((Math.random() * slots.length));
