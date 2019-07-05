@@ -281,8 +281,8 @@ assault.on("message", async message => {
                message.channel.send("You're already verified").then((m) => {
                     setTimeout(() => {
                          m.delete();
-                         return;
                     }, 5000)
+                    return;
                })
           }
           message.member.addRole(role.id);
