@@ -282,8 +282,8 @@ assault.on("message", async message => {
                     setTimeout(() => {
                          m.delete();
                     }, 5000)
-                    return;
                })
+               return;
           }
           message.member.addRole(role.id);
           message.delete();
