@@ -277,7 +277,7 @@ assault.on("message", async message => {
 
      if ((cmd === `${prefix}verify`) && (message.channel.id === "596484113372807188")) {
           let role = message.guild.roles.find(r => r.name === "Assault Family");
-          if (message.author.roles.has(role.id)) {
+          if (message.member.roles.has(role.id)) {
                message.channel.send("You're already verified").then((m) => {
                     setTimeout(() => {
                          m.delete();
