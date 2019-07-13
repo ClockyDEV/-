@@ -45,7 +45,7 @@ assault.on("ready", () => {
 
 assault.on("message", async message => {
      if (message.guild.id !== "569817664990740503") return;
-     if ((!message.content.startsWith(prefix)) && (message.channel.id === "596484113372807188")) return message.delete();
+     if ((!message.content.startsWith(prefix)) && (message.channel.id === "596484113372807188") && (message.author.id !== owner)) return message.delete();
      if (message.channel.type === "dm") return;
      if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
