@@ -14,7 +14,7 @@ const math = require('mathjs');
 var color = "#48dbfb"
 var color2 = "#c0392b";
 var color3 = "#1dd1a1"
-var owner = "288117975582507010";
+var owner = "561984301445677066";
 var prefix = "a!";
 var regToken = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
 
