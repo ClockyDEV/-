@@ -14,7 +14,7 @@ const math = require('mathjs');
 var color = "#48dbfb"
 var color2 = "#c0392b";
 var color3 = "#1dd1a1"
-var owner = "561984301445677066";
+var owner = "288117975582507010";
 var prefix = "a!";
 var regToken = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
 
@@ -45,7 +45,7 @@ assault.on("ready", () => {
 
 assault.on("message", async message => {
      if (message.guild.id !== "569817664990740503") return;
-     if ((!message.content.startsWith(prefix)) && (message.channel.id === "596484113372807188") && (message.author.id !== owner)) return message.delete();
+     if ((!message.content.startsWith(prefix)) && (message.channel.id === "596484113372807188")) return message.delete();
      if (message.channel.type === "dm") return;
      if (message.author.bot) return;
      if (!message.content.startsWith(prefix)) return;
@@ -285,6 +285,38 @@ assault.on("message", async message => {
                     m.delete();
                }, 5000)
           })
+     }
+
+     const Client = require('fortnite');
+     const fortnite = new Client(process.env.TRN);
+
+     if ((cmd == `${prefix}fortnite`) || (cmd == `${prefix}fortnitestats`) || (cmd == `${prefix}fnstats`)) {
+
+          let platform;
+          let username;
+
+          platform = args.shift();
+          username = args.join(" ");
+
+          if (!platform) return message.channel.send("**Please include the platform. Usage: `a!fortnite <pc|xbl|psn> <username>`**");
+          if (!username) return message.channel.send("**Please provide a username. Usage: `a!fortnite <pc|xbl|psn> <username>`**");
+
+          fortnite.user(username, platform).then(data => {
+               let embed = new Discord.RichEmbed()
+                    .setTitle(username)
+                    .setColor(color)
+                    .setDescription("Lifetime Stats")
+                    .setThumbnail(client.user.displayAvatarURL)
+                    .addField("Top 3s", data.stats.lifetime.top_3, true)
+                    .addField("Top 5s", data.stats.lifetime.top_5, true)
+                    .addField("Wins", data.stats.lifetime.wins, true)
+                    .addField("Kills", data.stats.lifetime.kills, true)
+                    .addField("K/D", data.stats.lifetime.kd, true)
+                    .addField("Matches", data.stats.lifetime.matches, true)
+               return message.channel.send(embed);
+          }).catch(err => {
+               message.reply("Could not find that user on the platform").then(r => r.delete(5000));
+          });
      }
 
      if (cmd === `${prefix}timer`) {
@@ -582,12 +614,6 @@ assault.on("message", async message => {
                channel.send(xoembed);
           }, time)
      }
-
-     // if (cmd === `${prefix}fortnite-stats`) {
-     //      const embed = new Discord.RichEmbed()
-     //           .setColor(color)
-     //           .setAuthor(`Stats for ${user} | ${insert}`)
-     // }
 
      if (cmd === `${prefix}weather`) {
 
